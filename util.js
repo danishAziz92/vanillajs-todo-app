@@ -13,3 +13,37 @@ export function elementFromTemplateString(templateString){
     template.innerHTML = templateString.trim();
     return template.content.firstElementChild;
 }
+
+export function handleTodoStorage(value, action) {
+    //Logic to Add, update and delete an object inside local storage
+    switch (action) {
+        case "create":
+            localStorage.setItem("todos", JSON.stringify(value))
+            break;
+
+        case "add":
+            addTodo(value)
+            break;
+
+        case "update":
+            updateTodo(value);
+            break;
+
+        default:
+            break;
+    }
+}
+
+function addTodo(value){
+    const existingData = JSON.parse(localStorage.getItem("todos"));
+    existingData.push(value);
+    localStorage.setItem("todos", JSON.stringify(existingData));
+}
+
+function updateTodo(item) {
+    const currentTodos = JSON.parse(localStorage.getItem("todos"));
+    const todoToUpdate = currentTodos.filter( todo => todo.uuid === item.uuid);
+    todoToUpdate[0].inputText = item.inputText;
+    todoToUpdate[0].checked = item.checked;
+    localStorage.setItem("todos", JSON.stringify(currentTodos));
+}

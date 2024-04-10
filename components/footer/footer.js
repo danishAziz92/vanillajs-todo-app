@@ -1,5 +1,5 @@
 import './footer-styles.css'
-import { addItemToList } from "../todo-list/todo-list.js";
+import { loadNewItemToList } from "../todo-list/todo-list.js";
 
 export const footerTemplate = `
 <div class="footer footer-container">
@@ -20,7 +20,7 @@ export function footerComponent(){
     function handleAddTodo(event){
         event.preventDefault();
         const todoInput = document.getElementById("todo-item");
-        todoInput.value && addItemToList(todoInput.value);
+        todoInput.value && loadNewItemToList(todoInput.value);
         todoInput.value = "";
     }
 }

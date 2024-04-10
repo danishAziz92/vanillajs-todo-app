@@ -1,22 +1,45 @@
 import { v4 as uuidv4 } from "uuid";
 
 import "./todo-list-styles.css";
-import { appendNode, elementFromTemplateString } from "../../util.js";
+import { appendNode, elementFromTemplateString, handleTodoStorage } from "../../util.js";
 import { initTodoListItem } from "./todo-list.factory.js";
 
 const todoStateMap = {};
 
-export function addItemToList(inputText) {
+export function loadNewItemToList(inputText){
   const uuid = uuidv4();
-  const todoState = initTodoListItem(inputText);
-  todoStateMap[uuid] = todoState;
-  const listContainerElement = document.getElementById("todo-list-container");
-  appendNode(listContainerElement, getTodoListItemNode(todoState, uuid));
+  loadItemToList({inputText, checked: false, uuid});
+  addToTodoStorage({inputText, checked: false, uuid});
 }
 
 export function attachTodoListEventDelegator() {
   const listContainerElement = document.getElementById("todo-list-container");
   listContainerElement.addEventListener("click", handleListItemEvents);
+}
+
+export function renderStoredTodos(){
+  //Logic for render list from local storage
+}
+
+function loadItemToList(listItemData){
+  createItemState(listItemData);
+  appendNode(document.getElementById("todo-list-container"), getTodoListItemNode(listItemData));
+}
+
+function createItemState (listItemData) {
+  const todoState = initTodoListItem(listItemData);
+  todoStateMap[listItemData.uuid] = todoState;
+}
+
+function addToTodoStorage (listItemData) {
+  if(window && window.localStorage) {
+    //Need to store data with id so that we can update persisted data as well
+    //Think through current normal rendering flow logic as well
+    if(localStorage.getItem("todos") === null) 
+      handleTodoStorage([listItemData], 'create');
+    else
+      handleTodoStorage(listItemData, "add");
+  }
 }
 
 function handleListItemEvents(e) {
@@ -47,21 +70,21 @@ function handleListItemEvents(e) {
   }
 }
 
-function getTodoListItemNode(todoListItem, uuid) {
-  const todoListItemTemplate = `<div class="todo-list-item" data-id="${uuid}">
+function getTodoListItemNode(todoListItem) {
+  const todoListItemTemplate = `<div class="todo-list-item" data-id="${todoListItem.uuid}">
         <input 
             type="checkbox"
             class="todo-list-checkbox"
             name="todoListCheckbox"
             data-action="status"
-            ${todoListItem.getCheckedValue() && "checked"}
+            ${todoListItem.checked && "checked"}
             />
 
         <input
             type="text"
             class="todo-list-input"
             name="todoListInput"
-            value="${todoListItem.getTextValue()}"
+            value="${todoListItem.inputText}"
             disabled
             aria-label="todo list item text"
         />

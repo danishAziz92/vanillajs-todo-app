@@ -1,6 +1,9 @@
-export function initTodoListItem(value) {
-  let initialValue = value;
-  let checked = false;
+import { handleTodoStorage } from "../../util.js"
+
+export function initTodoListItem(data) {
+  let initialValue = data.inputText;
+  let checked = data.checked;
+  let uuid = data.uuid;
 
   const editTodo = (parentNode) => {
     console.log("factory: editing Todo", initialValue);
@@ -28,6 +31,8 @@ export function initTodoListItem(value) {
       parentNode.style.textDecoration = "";
       parentNode.querySelector(".todo-list-checkbox").checked = false;
     }
+
+    handleTodoStorage({inputText: initialValue, checked, uuid}, "update");
   };
 
   const cancelEditTodo = (parentNode) => {
@@ -45,6 +50,7 @@ export function initTodoListItem(value) {
   const toggleStatusTodo = (parentNode) => {
     checked = !checked;
     parentNode.style.textDecoration = checked ? "line-through" : "";
+    handleTodoStorage({inputText: initialValue, checked, uuid}, "update");
   }
 
   return {
@@ -52,7 +58,5 @@ export function initTodoListItem(value) {
     saveTodo,
     cancelEditTodo,
     toggleStatusTodo,
-    getTextValue: () => initialValue,
-    getCheckedValue: () => checked,
   };
 }
