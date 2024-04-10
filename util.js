@@ -29,6 +29,10 @@ export function handleTodoStorage(value, action) {
             updateTodo(value);
             break;
 
+        case "delete":
+            deleteTodo(value);
+            break;
+
         default:
             break;
     }
@@ -46,4 +50,10 @@ function updateTodo(item) {
     todoToUpdate[0].inputText = item.inputText;
     todoToUpdate[0].checked = item.checked;
     localStorage.setItem("todos", JSON.stringify(currentTodos));
+}
+
+function deleteTodo(uuid) {
+    const currentTodos = JSON.parse(localStorage.getItem("todos"));
+    const updatedTodoList = currentTodos.filter( todo => todo.uuid !== uuid);
+    localStorage.setItem("todos", JSON.stringify(updatedTodoList));
 }

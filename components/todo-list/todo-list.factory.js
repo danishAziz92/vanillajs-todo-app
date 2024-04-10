@@ -53,10 +53,16 @@ export function initTodoListItem(data) {
     handleTodoStorage({inputText: initialValue, checked, uuid}, "update");
   }
 
+  const deleteTodo = (parentNode) => {
+    parentNode.remove();
+    handleTodoStorage(uuid, "delete");
+  }
+
   return {
     editTodo,
     saveTodo,
     cancelEditTodo,
     toggleStatusTodo,
+    deleteTodo
   };
 }

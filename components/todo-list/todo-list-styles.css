@@ -9,10 +9,8 @@
     color: red;
 }
 
-.todo-list-item .edit-button{
+.todo-list-item .hover-button{
     visibility: hidden;
-    background: url(../../assets/edit.svg);
-    background-position: center;
     border:none;
     padding: 0;
     border-radius:0;
@@ -20,7 +18,17 @@
     height: 20px;
 }
 
-.todo-list-item:hover .edit-button{
+.todo-list-item .edit-button{
+    background: url(../../assets/edit.svg);
+    background-position: center;
+}
+
+.todo-list-item .delete-button{
+    background: url(../../assets/delete.svg);
+    background-position: center;
+}
+
+.todo-list-item:hover .hover-button{
     visibility: visible;
 }
 

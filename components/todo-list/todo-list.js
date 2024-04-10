@@ -1,15 +1,19 @@
 import { v4 as uuidv4 } from "uuid";
 
 import "./todo-list-styles.css";
-import { appendNode, elementFromTemplateString, handleTodoStorage } from "../../util.js";
+import {
+  appendNode,
+  elementFromTemplateString,
+  handleTodoStorage,
+} from "../../util.js";
 import { initTodoListItem } from "./todo-list.factory.js";
 
 const todoStateMap = {};
 
-export function loadNewItemToList(inputText){
+export function loadNewItemToList(inputText) {
   const uuid = uuidv4();
-  loadItemToList({inputText, checked: false, uuid});
-  addToTodoStorage({inputText, checked: false, uuid});
+  loadItemToList({ inputText, checked: false, uuid });
+  addToTodoStorage({ inputText, checked: false, uuid });
 }
 
 export function attachTodoListEventDelegator() {
@@ -17,28 +21,34 @@ export function attachTodoListEventDelegator() {
   listContainerElement.addEventListener("click", handleListItemEvents);
 }
 
-export function renderStoredTodos(){
+export function renderStoredTodos() {
   //Logic for render list from local storage
+  const currentTodos = JSON.parse(localStorage.getItem("todos"));
+  currentTodos.forEach((todo) => {
+    loadItemToList(todo);
+  });
 }
 
-function loadItemToList(listItemData){
+function loadItemToList(listItemData) {
   createItemState(listItemData);
-  appendNode(document.getElementById("todo-list-container"), getTodoListItemNode(listItemData));
+  appendNode(
+    document.getElementById("todo-list-container"),
+    getTodoListItemNode(listItemData)
+  );
 }
 
-function createItemState (listItemData) {
+function createItemState(listItemData) {
   const todoState = initTodoListItem(listItemData);
   todoStateMap[listItemData.uuid] = todoState;
 }
 
-function addToTodoStorage (listItemData) {
-  if(window && window.localStorage) {
+function addToTodoStorage(listItemData) {
+  if (window && window.localStorage) {
     //Need to store data with id so that we can update persisted data as well
     //Think through current normal rendering flow logic as well
-    if(localStorage.getItem("todos") === null) 
-      handleTodoStorage([listItemData], 'create');
-    else
-      handleTodoStorage(listItemData, "add");
+    if (localStorage.getItem("todos") === null)
+      handleTodoStorage([listItemData], "create");
+    else handleTodoStorage(listItemData, "add");
   }
 }
 
@@ -60,9 +70,14 @@ function handleListItemEvents(e) {
     case "save":
       todoStateMap[todoId].saveTodo(parentNode);
       break;
-    
+
     case "status":
       todoStateMap[todoId].toggleStatusTodo(parentNode);
+      break;
+
+    case "delete":
+      todoStateMap[todoId].deleteTodo(parentNode);
+      delete todoStateMap[todoId];
       break;
 
     default:
@@ -71,7 +86,9 @@ function handleListItemEvents(e) {
 }
 
 function getTodoListItemNode(todoListItem) {
-  const todoListItemTemplate = `<div class="todo-list-item" data-id="${todoListItem.uuid}">
+  const todoListItemTemplate = `<div class="todo-list-item" style="text-decoration: ${
+    todoListItem.checked ? "line-through" : ""
+  }" data-id="${todoListItem.uuid}">
         <input 
             type="checkbox"
             class="todo-list-checkbox"
@@ -88,7 +105,8 @@ function getTodoListItemNode(todoListItem) {
             disabled
             aria-label="todo list item text"
         />
-        <button data-action="edit" class="edit-button"></button>
+        <button data-action="delete" class="hover-button delete-button"></button>
+        <button data-action="edit" class="hover-button edit-button"></button>
         <button data-action="cancel" class="on-edit-button cancel-button">Cancel</button>
         <button data-action="save" class="on-edit-button save-button">Save</button>
     </div>
@@ -120,8 +138,6 @@ function getTodoListItemNode(todoListItem) {
 
 //I think we should implement this function standalone so that it can be imported once where it needs to be called
 
-
-
 //old Code
 //TODO: Review this logic and design choice
 //Will need to store key value pairs in this object. For key will need to either create a row id
@@ -133,7 +149,6 @@ function getTodoListItemNode(todoListItem) {
 /* const originalTodoValue = {
     val: "",
 }; */
-
 
 //Old Code. Wasn't scalable and had a bug due to absence of individual state management for indv. todos
 
