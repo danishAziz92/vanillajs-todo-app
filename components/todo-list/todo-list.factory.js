@@ -49,6 +49,8 @@ export function initTodoListItem(data) {
 
   const toggleStatusTodo = (parentNode) => {
     checked = !checked;
+    //TODO instead of doing the below DOM op, we can use the auto event handler of css which is checkbox class:checked + input box
+    //This will use css's built in event handler which will check if the checkbox is checked, then apply certain CSS to it's sibling
     parentNode.style.textDecoration = checked ? "line-through" : "";
     handleTodoStorage({inputText: initialValue, checked, uuid}, "update");
   }

@@ -46,6 +46,7 @@ function addTodo(value){
 
 function updateTodo(item) {
     const currentTodos = JSON.parse(localStorage.getItem("todos"));
+    //Get the todo to update and update it directly to reflect in the currentTodos obj due to .filter returning reference inside the obj
     const todoToUpdate = currentTodos.filter( todo => todo.uuid === item.uuid);
     todoToUpdate[0].inputText = item.inputText;
     todoToUpdate[0].checked = item.checked;

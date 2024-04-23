@@ -8,6 +8,8 @@ import {
 } from "../../util.js";
 import { initTodoListItem } from "./todo-list.factory.js";
 
+//TODO Sort the list. Make it so that when something is checked, it is moved to bottom and other items are sorted alphabetically
+
 const todoStateMap = {};
 
 export function loadNewItemToList(inputText) {
@@ -24,7 +26,7 @@ export function attachTodoListEventDelegator() {
 export function renderStoredTodos() {
   //Logic for render list from local storage
   const currentTodos = JSON.parse(localStorage.getItem("todos"));
-  currentTodos.forEach((todo) => {
+  currentTodos?.forEach((todo) => {
     loadItemToList(todo);
   });
 }
@@ -42,6 +44,7 @@ function createItemState(listItemData) {
   todoStateMap[listItemData.uuid] = todoState;
 }
 
+//TODO: Implement this logic in the handleTodoStorage util. And use the util instead of this function
 function addToTodoStorage(listItemData) {
   if (window && window.localStorage) {
     //Need to store data with id so that we can update persisted data as well
@@ -94,7 +97,7 @@ function getTodoListItemNode(todoListItem) {
             class="todo-list-checkbox"
             name="todoListCheckbox"
             data-action="status"
-            ${todoListItem.checked && "checked"}
+            ${todoListItem.checked ? "checked" : ""}
             />
 
         <input
