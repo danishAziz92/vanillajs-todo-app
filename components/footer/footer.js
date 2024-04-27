@@ -1,5 +1,5 @@
 import './footer-styles.css'
-import { loadNewItemToList } from "../todo-list/todo-list.js";
+import { todoStore } from "../todo-list/todo-list.js";
 
 export const footerTemplate = `
 <div class="footer footer-container">
@@ -20,7 +20,8 @@ export function footerComponent(){
     function handleAddTodo(event){
         event.preventDefault();
         const todoInput = document.getElementById("todo-item");
-        todoInput.value && loadNewItemToList(todoInput.value);
+        //addTodo will handle the uuid and state creation in the store
+        todoInput.value && todoStore.addTodo(todoInput.value);
         todoInput.value = "";
     }
 }

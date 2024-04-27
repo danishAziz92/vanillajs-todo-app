@@ -6,16 +6,68 @@ import {
   elementFromTemplateString,
   handleTodoStorage,
 } from "../../util.js";
-import { initTodoListItem } from "./todo-list.factory.js";
+import { initTodoStore } from "./todo-list.factory.js";
 
 //TODO Sort the list. Make it so that when something is checked, it is moved to bottom and other items are sorted alphabetically
 
 const todoStateMap = {};
+export const todoStore = initTodoStore();
 
-export function loadNewItemToList(inputText) {
+todoStore.subscribe(renderList);
+todoStore.subscribe(updateTodoLocalStorage);
+
+export const addNewTodo = (todoText) => {
   const uuid = uuidv4();
-  loadItemToList({ inputText, checked: false, uuid });
-  addToTodoStorage({ inputText, checked: false, uuid });
+  todoStore.addTodo({todoText, checked: false, uuid})
+}
+
+function renderList(todos) {
+  const todoContainer = document.getElementById("todo-list-container");
+  todoContainer.innerHTML = "";
+  for( let key in todos) {
+    appendNode(
+      todoContainer,
+      getTodoListItemNode(key, todos[key])
+    );
+  };
+}
+
+function updateTodoLocalStorage(todos) {
+  //Logic to only set latest todo store data to local storage
+  if (window && window.localStorage) {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------old code--------------------------------------->
+
+export function loadNewItemToList(todoText) {
+  const uuid = uuidv4();
+  loadItemToList({ todoText, checked: false, uuid });
+  addToTodoStorage({ todoText, checked: false, uuid });
 }
 
 export function attachTodoListEventDelegator() {
@@ -79,8 +131,7 @@ function handleListItemEvents(e) {
       break;
 
     case "delete":
-      todoStateMap[todoId].deleteTodo(parentNode);
-      delete todoStateMap[todoId];
+      todoStore.deleteTodo(todoId);
       break;
 
     default:
@@ -88,10 +139,10 @@ function handleListItemEvents(e) {
   }
 }
 
-function getTodoListItemNode(todoListItem) {
+function getTodoListItemNode(uuid, todoListItem) {
   const todoListItemTemplate = `<div class="todo-list-item" style="text-decoration: ${
     todoListItem.checked ? "line-through" : ""
-  }" data-id="${todoListItem.uuid}">
+  }" data-id="${uuid}">
         <input 
             type="checkbox"
             class="todo-list-checkbox"
@@ -104,7 +155,7 @@ function getTodoListItemNode(todoListItem) {
             type="text"
             class="todo-list-input"
             name="todoListInput"
-            value="${todoListItem.inputText}"
+            value="${todoListItem.todoText}"
             disabled
             aria-label="todo list item text"
         />
