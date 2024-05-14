@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 //import { setupCounter } from './counter.js'
 import { headerTemplate } from './components/header/header.js'
 import { footerTemplate, footerComponent } from './components/footer/footer.js'
-import { attachTodoListEventDelegator, todoStore } from "./components/todo-list/todo-list.js";
+import { attachTodoListEventDelegator, todoStore, fetchTodos } from "./components/todo-list/todo-list.js";
 
 document.querySelector('#app').innerHTML = `
     ${headerTemplate}
@@ -13,4 +13,4 @@ document.querySelector('#app').innerHTML = `
 `
 footerComponent();
 attachTodoListEventDelegator();
-todoStore.loadTodos();
+todoStore.loadTodos(fetchTodos());

@@ -2,18 +2,30 @@ Little Todo app built using vanilla Js and Vite
 Do npm run dev to start locally
 
 
-Todo creation/load logic:
+Logic/ App flow::
+There is a local todos state maintained in the observable store. On app load, data is fetched from 
+localstorage/api and the local state is update. Now, there are 2 subscriber methods implemented,
+renderList and updateTodoLocalStorage. Both these methods are fired via notify whenever the todo state is updated via the store state modifier functions. The only pure UI event which is click on edit button(shows cancel and save buttons) is implemented out of the observer store and is called in the event handler as it doesn't do anything to the state.
+1: renderList which basically clears the todoContainer and then renders the list based on the latest local state of the todos. The renderList function internally creates nodes with the latest data provided to it from the notify fn, so it will make sure the right ui state attributes are selected based on the local state and is rendered in the container. As it re-renders the whole UI inside the list container, all the UI state of individual todo items will get reset to the initial state(EX: on cancel, all the cancel and save buttons of all the items will get reset to initial UI state, so this can't handle individual element update exclusively as the whole list gets updated).
+P.S: Note that the status update, scratch effect is not done via JS, as we have utilized the in-built behavior of css to detect UI state changes of elements and update their css. This saves unnecessary Js code
+2: updateTodoLocalStorage: Which takes the latest local todos state and saves it in the local-storage to make sure that the data is saved and persistent
 
-data created via user action --> create uuid(need uuid to associate ui element with it's state) --> create local state(to represent ui element data in Js and provide methods to interact with the state/associated UI using a class based state manager) --> create/update uuid-state map --> append node --> save data and uuid to storage
-
-data loaded from server --> uuid and data is already there. skip create uuid --> create local state --> create/update local uuid-state mapping --> append node --> Skip saving to local storage
-
-core/common adding item to node functionality: Expect data(text, status, uuid) --> create local state --> create/update local uuid-state map --> append node
+The loadList function is called in the main.js file at the time of startup of the app, where it fetches data from the localStorage or API and passes it to the store modifier, loadTodos(fetched todos). This basically again saves the fetched data inside the local todos state and calls notify and the app renders/loads all the previously saved data on app load.
 
 
+Issues:
+1: One issue is that there is only 1 function to render/re-render the whole list for any actions performed on any list item. This is good as it is more readable and maintainable as it's a small application and load limited number of items in the list. In case the list was supposed to be huge or the rendering logic of each item was costly, then we would have to implement a logic which would handle the update of individual items making it more efficient. The app flow would be similar, but we would probably use pub-sub architecture to receive different types of events and call different UI modifying methods
 
+
+
+
+
+
+
+
+Initial thought process::
 Observer pattern for the todo app:
-We will have a store factory. With a todo object which will store todo data keyed to uuids. On add, we will push todo data into this object. on other actions, we will need to pass uuid from the event handler to the store state modifiers, which will get the todo data and modify them. Once we modify the state, we will have to notify functions which will perform certain UI and local storage updates.
+We will have a store factory. With a todo object which will store todo data keyed to uuids. On add, we will push todo data into this object. on other actions, we will need to pass uuid from the event handler to the store's state modifiers, which will get the todo data and modify them. Once we modify the state, we will have to notify functions which will perform certain UI and local storage updates.
 
 For notify, below are the actions we need to perform:
 1: edit: Fetch parent, pull the action buttons and toggle their visibility
@@ -31,3 +43,25 @@ For notify, below are the actions we need to perform:
 2: We can have a render function, which will clear the UI and re-render the list again with the latest todo list. But in this case, need to think about how to handle UI updates for individual todo item buttons, because that data is not stored in the store which will let the render function know that if we need to show/hide action buttons for a todo item or not. For this we will have to have the pub-sub method. Think more on this
 
 Have to go with option 2 with pub-sub pattern
+
+How to handle individual todo item UI updates.
+
+Actions:
+    1: Edit
+        - UI: Fetch action buttons and make them visible
+              Fetch it's input elem and make it enabled
+        - State: None
+    2: Cancel
+        - UI: Fetch action buttons and hide them
+              Fetch it's input elem, update it's value and make it disabled
+        - State: None
+    3: Save
+        - UI: Fetch action buttons and hide them
+        - State: Use uuid to get todo data and update it using it's current input elem's value. Think on the flow of these events
+
+    4: Status
+        - UI:
+        - State:
+
+
+TODO: Make localised UI updated rather than clearing the whole container using innerHTML

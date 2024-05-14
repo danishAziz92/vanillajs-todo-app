@@ -8,6 +8,7 @@ export function initTodoStore() {
 
   let todos = {};
   const listeners = [];
+  const topics = {};
 
   const subscribe = (listener) => {
     listeners.push(listener);
@@ -23,19 +24,37 @@ export function initTodoStore() {
     notify();
   };
 
-  const loadTodos = () => {
+  const loadTodos = (fetchedTodos) => {
     //Get todos from localstorage or API, and push into the todos array/state on app load and fire notify. From there only use addTodo to add
     //todo data to the state and in this fire notify. A render function will be subscribed to the store, in which we will
     //pass the local store data and render todos according to that
-    const fetchedTodos = JSON.parse(localStorage.getItem("todos"));
+    //const fetchedTodos = JSON.parse(localStorage.getItem("todos")); No data fetching here, only store update
     //Todo data structure needs to be changed to uuid:{text, checked} as per new store structure and needs to be same in local
     //and the DB
     fetchedTodos && (todos = {...fetchedTodos});
     notify();
-  }
+  };
 
   const deleteTodo = (uuid) => {
     delete todos[uuid];
+    notify();
+  };
+
+  const updateTodoStatus = (uuid) => {
+    //This triggers a re-render of the list with the latest todoData for now. So whatever value,
+    //the local copy of todos is, will reflect in the UI after this action
+    todos[uuid].checked = !todos[uuid].checked;
+    notify();
+  };
+
+  const cancelEditTodo = (uuid) => {
+    console.log("observable: cancel clicked");
+    notify();
+  };
+
+  const updateTodoText = (uuid, updatedText) => {
+    todos[uuid].todoText = updatedText;
+    todos[uuid].checked = false;
     notify();
   }
 
@@ -64,17 +83,6 @@ export function initTodoStore() {
 
   //---------------------------------old code--------------------------------------->
 
-  const editTodo = (parentNode) => {
-    console.log("factory: editing Todo", initialValue);
-    parentNode.querySelector(".todo-list-input").disabled = false;
-    const onEditButtons = parentNode.querySelectorAll(
-      ".cancel-button, .save-button"
-    );
-    onEditButtons.forEach((buttonElem) => {
-      buttonElem.style.visibility = "visible";
-    });
-  };
-
   const saveTodo = (parentNode) => {
     console.log("factory: saving Todo", initialValue);
     initialValue = parentNode.querySelector(".todo-list-input").value;
@@ -94,18 +102,6 @@ export function initTodoStore() {
     handleTodoStorage({ todoText: initialValue, checked, uuid }, "update");
   };
 
-  const cancelEditTodo = (parentNode) => {
-    console.log("factory: cancel clicked");
-    parentNode.querySelector(".todo-list-input").value = initialValue;
-    parentNode.querySelector(".todo-list-input").disabled = true;
-    const onEditButtons = parentNode.querySelectorAll(
-      ".cancel-button, .save-button"
-    );
-    onEditButtons.forEach((buttonElem) => {
-      buttonElem.style.visibility = "hidden";
-    });
-  };
-
   const toggleStatusTodo = (parentNode) => {
     checked = !checked;
     //TODO instead of doing the below DOM op, we can use the auto event handler of css which is checkbox class:checked + input box
@@ -120,13 +116,14 @@ export function initTodoStore() {
   }; */
 
   return {
-    editTodo,
     saveTodo,
     cancelEditTodo,
     toggleStatusTodo,
     deleteTodo,
     subscribe,
     addTodo,
-    loadTodos
+    loadTodos,
+    updateTodoStatus,
+    updateTodoText
   };
 }

@@ -37,3 +37,7 @@
     font-size: initial;
     visibility: hidden;
 }
+
+.todo-list-item .todo-list-checkbox:checked + input{
+    text-decoration: line-through;
+}

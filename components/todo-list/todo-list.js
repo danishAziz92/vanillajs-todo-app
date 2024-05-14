@@ -16,6 +16,17 @@ export const todoStore = initTodoStore();
 todoStore.subscribe(renderList);
 todoStore.subscribe(updateTodoLocalStorage);
 
+export const fetchTodos = () => {
+  try{
+    const fetchedTodos = JSON.parse(localStorage.getItem("todos"));
+    return fetchedTodos;
+  }
+  catch(e){
+    console.warn("Error occurred while fetching todos", e);
+    return {};
+  }
+}
+
 export const addNewTodo = (todoText) => {
   const uuid = uuidv4();
   todoStore.addTodo({todoText, checked: false, uuid})
@@ -39,6 +50,63 @@ function updateTodoLocalStorage(todos) {
   }
 }
 
+function showEditActionButtons (parentNode) {
+  console.log("editing Todo");
+  parentNode.querySelector(".todo-list-input").disabled = false;
+  const onEditButtons = parentNode.querySelectorAll(
+    ".cancel-button, .save-button"
+  );
+  onEditButtons.forEach((buttonElem) => {
+    buttonElem.style.visibility = "visible";
+  });
+};
+
+//No need to explicitly hide edit action buttons, as upon those actions, we're re-rendering the whole
+//list with their saved state, so the buttons will get removed during DOM clearing
+function hideEditActionButtons (parentNode) {
+  parentNode.querySelector(".todo-list-input").value = initialValue;
+    parentNode.querySelector(".todo-list-input").disabled = true;
+    const onEditButtons = parentNode.querySelectorAll(
+      ".cancel-button, .save-button"
+    );
+    onEditButtons.forEach((buttonElem) => {
+      buttonElem.style.visibility = "hidden";
+    });
+}
+
+
+function handleListItemEvents(e) {
+  console.log("event captured", e.target);
+  const parentNode = e.target.parentNode;
+  const todoId = parentNode.dataset.id;
+  const action = e.target.getAttribute("data-action");
+
+  switch (action) {
+    case "edit":
+      showEditActionButtons(parentNode);
+      break;
+
+    case "cancel":
+      todoStore.cancelEditTodo(todoId)
+      //hideEditActionButtons(parentNode); No need, as we're re-rendering the list for now
+      break;
+
+    case "save":
+      todoStore.updateTodoText(todoId, parentNode.querySelector(".todo-list-input").value);
+      break;
+
+    case "status":
+      todoStore.updateTodoStatus(todoId);
+      break;
+
+    case "delete":
+      todoStore.deleteTodo(todoId);
+      break;
+
+    default:
+      break;
+  }
+}
 
 
 
@@ -107,42 +175,8 @@ function addToTodoStorage(listItemData) {
   }
 }
 
-function handleListItemEvents(e) {
-  console.log("event captured", e.target);
-  const parentNode = e.target.parentNode;
-  const todoId = parentNode.dataset.id;
-  const action = e.target.getAttribute("data-action");
-
-  switch (action) {
-    case "edit":
-      todoStateMap[todoId].editTodo(parentNode);
-      break;
-
-    case "cancel":
-      todoStateMap[todoId].cancelEditTodo(parentNode);
-      break;
-
-    case "save":
-      todoStateMap[todoId].saveTodo(parentNode);
-      break;
-
-    case "status":
-      todoStateMap[todoId].toggleStatusTodo(parentNode);
-      break;
-
-    case "delete":
-      todoStore.deleteTodo(todoId);
-      break;
-
-    default:
-      break;
-  }
-}
-
 function getTodoListItemNode(uuid, todoListItem) {
-  const todoListItemTemplate = `<div class="todo-list-item" style="text-decoration: ${
-    todoListItem.checked ? "line-through" : ""
-  }" data-id="${uuid}">
+  const todoListItemTemplate = `<div class="todo-list-item" data-id="${uuid}">
         <input 
             type="checkbox"
             class="todo-list-checkbox"
