@@ -13,12 +13,15 @@ import { initTodoStore } from "./todo-list.factory.js";
 const todoStateMap = {};
 export const todoStore = initTodoStore();
 
-todoStore.subscribe(renderList);
-todoStore.subscribe(updateTodoLocalStorage);
+//Subscription to store topics
+todoStore.subscribe("all-todos-tasks",renderList);
+todoStore.subscribe("all-todos-tasks",updateTodoLocalStorage);
+
+todoStore.subscribe("filter-tasks", renderList);
 
 export const fetchTodos = () => {
   try{
-    const fetchedTodos = JSON.parse(localStorage.getItem("todos"));
+    const fetchedTodos = JSON.parse(window?.localStorage.getItem("todos"));
     return fetchedTodos;
   }
   catch(e){

@@ -10,18 +10,24 @@ export function initTodoStore() {
   const listeners = [];
   const topics = {};
 
-  const subscribe = (listener) => {
-    listeners.push(listener);
+  const subscribe = (topic, listener) => {
+    if(!topics[topic]){
+      topics[topic] = []
+    }
+    topics[topic].push(listener);
   }
 
-  const notify = () => {
-    listeners.forEach( listener => listener(todos))
+  const notify = (topic, todos) => {
+    if(!topics[topic]){
+      return;
+    }
+    topics[topic].forEach( listener => listener(todos))
   }
 
   const addTodo = (todoText) => {
     const uuid = uuidv4();
     todos[uuid] = { todoText, checked: false };
-    notify();
+    notify("all-todos-tasks",todos);
   };
 
   const loadTodos = (fetchedTodos) => {
@@ -32,30 +38,41 @@ export function initTodoStore() {
     //Todo data structure needs to be changed to uuid:{text, checked} as per new store structure and needs to be same in local
     //and the DB
     fetchedTodos && (todos = {...fetchedTodos});
-    notify();
+    notify("all-todos-tasks",todos);
   };
 
   const deleteTodo = (uuid) => {
     delete todos[uuid];
-    notify();
+    notify("all-todos-tasks",todos);
   };
 
   const updateTodoStatus = (uuid) => {
     //This triggers a re-render of the list with the latest todoData for now. So whatever value,
     //the local copy of todos is, will reflect in the UI after this action
     todos[uuid].checked = !todos[uuid].checked;
-    notify();
+    notify("all-todos-tasks",todos);
   };
 
   const cancelEditTodo = (uuid) => {
     console.log("observable: cancel clicked");
-    notify();
+    notify("all-todos-tasks",todos);
   };
 
   const updateTodoText = (uuid, updatedText) => {
     todos[uuid].todoText = updatedText;
     todos[uuid].checked = false;
-    notify();
+    notify("all-todos-tasks",todos);
+  }
+
+  const filterList = (filterValue) => {
+    const filteredTodos = {};
+    filterValue = filterValue === "completed" ? true : false;
+    for(let key in todos) {
+      if(todos[key].checked === filterValue){
+        filteredTodos[key] = todos[key];
+      }
+    }
+    notify("filter-tasks", filteredTodos);
   }
 
 
@@ -124,6 +141,7 @@ export function initTodoStore() {
     addTodo,
     loadTodos,
     updateTodoStatus,
-    updateTodoText
+    updateTodoText,
+    filterList
   };
 }
