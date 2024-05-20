@@ -39,24 +39,23 @@ TODO::
 1. Component Structure and Naming Conventions
 File Naming: Use a consistent naming convention for your files. For instance, if you use todo-list.js, use todo-list-styles.css for its styles, and todo-list.factory.js for its factory. Similarly, for all components, use kebab-case.
 Component Functions: Ensure every component has a clear, consistent way of initializing and handling its functionality. Even dynamic components should have an initialization function if they perform setup tasks.
-`Example for Dynamic Component Initialization:
+```Example for Dynamic Component Initialization:
 // todo-list.js
 export function initializeTodoList() {
     attachTodoListEventDelegator();
     todoStore.loadTodos(fetchTodos());
 }
-`
-`Example for Static Component Initialization:
+```
+```Example for Static Component Initialization:
 // header.js
 export function initializeHeader() {
     document.querySelector('#header-container').innerHTML = headerTemplate;
     headerComponent();
 }
-`
+```
 2. Consistent Initialization in Main.js
 Initialize all components in a consistent manner in main.js.
-`
-import { initializeHeader } from './components/header/header.js';
+```import { initializeHeader } from './components/header/header.js';
 import { initializeFooter } from './components/footer/footer.js';
 import { initializeTodoList } from './components/todo-list/todo-list.js';
 
@@ -65,7 +64,7 @@ document.querySelector('#app').innerHTML =
     <div id="todo-list-container"></div>
     <div id="footer-container"></div>
 ;
-`
+```
 
 initializeHeader();
 initializeFooter();
