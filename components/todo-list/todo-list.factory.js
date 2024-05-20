@@ -64,6 +64,9 @@ export function initTodoStore() {
     notify("all-todos-tasks",todos);
   }
 
+  //Bug: In filtered state, if item is altered, the normal list update flow is triggered,
+  //but the filter values remain the same. Need to clear it for whole list flow. Will have to 
+  //create and subscribe a new function which will clear filter values in the UI 
   const filterList = (filterValue) => {
     const filteredTodos = {};
     filterValue = filterValue === "completed" ? true : false;

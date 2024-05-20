@@ -5,10 +5,6 @@
     margin-bottom: 10px;
 }
 
-.todo-list-item input{
-    color: red;
-}
-
 .todo-list-item .hover-button{
     visibility: hidden;
     border:none;
@@ -40,4 +36,31 @@
 
 .todo-list-item .todo-list-checkbox:checked + input{
     text-decoration: line-through;
+}
+
+input.todo-list-checkbox {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid silver;
+    background-color: grey;
+    appearance: none;
+    cursor: pointer;
+}
+
+input.todo-list-checkbox:checked {
+    clip-path: circle(50% at 50% 50%);
+    appearance: auto;
+}
+
+input.todo-list-input{
+    background-color: white;
+    border: 1px solid;
+    border-radius: 15px;
+    padding: 4px;
+}
+
+input.todo-list-input:enabled {
+    border: 1px solid black;
+    color: black;
 }

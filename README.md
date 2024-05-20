@@ -13,6 +13,65 @@ P.S: Note that the status update, scratch effect is not done via JS, as we have 
 The loadList function is called in the main.js file at the time of startup of the app, where it fetches data from the localStorage or API and passes it to the store modifier, loadTodos(fetched todos). This basically again saves the fetched data inside the local todos state and calls notify and the app renders/loads all the previously saved data on app load.
 
 
+
+Structure::
+Dynamic vs. Static Components
+Dynamic Components:
+
+Characteristics:
+Manage their own state.
+Handle user interactions.
+Perform their own rendering.
+Do not require explicit initialization outside their module.
+Example:
+todo-list.js manages the state of the todo items, subscribes to changes, and updates the UI accordingly.
+Static Components:
+
+Characteristics:
+Primarily focus on presenting static content or simple UI elements.
+Require explicit initialization to attach event listeners or perform other setup tasks.
+Export a template and a component function.
+Example:
+header.js and filter.js export a template and provide a function to initialize the component and attach event listeners.
+
+
+TODO::
+1. Component Structure and Naming Conventions
+File Naming: Use a consistent naming convention for your files. For instance, if you use todo-list.js, use todo-list-styles.css for its styles, and todo-list.factory.js for its factory. Similarly, for all components, use kebab-case.
+Component Functions: Ensure every component has a clear, consistent way of initializing and handling its functionality. Even dynamic components should have an initialization function if they perform setup tasks.
+Example for Dynamic Component Initialization:
+// todo-list.js
+export function initializeTodoList() {
+    attachTodoListEventDelegator();
+    todoStore.loadTodos(fetchTodos());
+}
+Example for Static Component Initialization:
+// header.js
+export function initializeHeader() {
+    document.querySelector('#header-container').innerHTML = headerTemplate;
+    headerComponent();
+}
+2. Consistent Initialization in Main.js
+Initialize all components in a consistent manner in main.js.
+import { initializeHeader } from './components/header/header.js';
+import { initializeFooter } from './components/footer/footer.js';
+import { initializeTodoList } from './components/todo-list/todo-list.js';
+
+document.querySelector('#app').innerHTML = `
+    <div id="header-container"></div>
+    <div id="todo-list-container"></div>
+    <div id="footer-container"></div>
+`;
+
+initializeHeader();
+initializeFooter();
+initializeTodoList();
+
+
+
+
+
+
 Issues:
 1: One issue is that there is only 1 function to render/re-render the whole list for any actions performed on any list item. This is good as it is more readable and maintainable as it's a small application and load limited number of items in the list. In case the list was supposed to be huge or the rendering logic of each item was costly, then we would have to implement a logic which would handle the update of individual items making it more efficient. The app flow would be similar, but we would probably use pub-sub architecture to receive different types of events and call different UI modifying methods
 

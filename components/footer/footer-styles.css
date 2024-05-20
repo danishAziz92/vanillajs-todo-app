@@ -10,12 +10,21 @@
     background: #FFFFFF;
     color: var(--text-color);
     width: 85%;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 25px;
+    padding: 5px;
+    margin-left: 5px;
 }
 
 .footer .add-item-container{
     display: flex;
     width: 100%;
-    justify-content: space-evenly;
+    justify-content: space-around;
     padding: 10px 0px;
     border: 1px solid var(--text-color);
+}
+
+.footer button{
+    margin:auto
 }

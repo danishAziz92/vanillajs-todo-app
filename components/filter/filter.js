@@ -4,7 +4,7 @@ import './filter-styles.css'
 export const filterTemplate= `
     <div class="filter-container">
         <select id="filter-dropdown">
-            <option disabled selected value> -- select an option -- </option>
+            <option disabled selected value="default"> -- select an option -- </option>
             <option value="pending">Pending</option>
             <option value="completed">Completed</option>
         </select>
@@ -13,6 +13,8 @@ export const filterTemplate= `
 `;
 
 export function filterComponent() {
+    todoStore.subscribe("all-todos-tasks", clearFilters);
+
     document.getElementById("filter-dropdown").addEventListener("change", handleFilterChange);
     document.getElementById("clear-filter-button").addEventListener("click", handleClearFilter);
 
@@ -23,6 +25,10 @@ export function filterComponent() {
     }
 
     function handleClearFilter(e) {
-        todoStore.loadTodos()
+        todoStore.loadTodos();
+    }
+
+    function clearFilters(){
+        document.getElementById("filter-dropdown").value = "default";
     }
 }

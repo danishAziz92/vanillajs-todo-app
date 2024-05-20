@@ -111,6 +111,33 @@ function handleListItemEvents(e) {
   }
 }
 
+function getTodoListItemNode(uuid, todoListItem) {
+  const todoListItemTemplate = `<div class="todo-list-item" data-id="${uuid}">
+        <input 
+            type="checkbox"
+            class="todo-list-checkbox"
+            name="todoListCheckbox"
+            data-action="status"
+            ${todoListItem.checked ? "checked" : ""}
+            />
+
+        <input
+            type="text"
+            class="todo-list-input"
+            name="todoListInput"
+            value="${todoListItem.todoText}"
+            disabled
+            aria-label="todo list item text"
+        />
+        <button data-action="delete" class="hover-button delete-button"></button>
+        <button data-action="edit" class="hover-button edit-button"></button>
+        <button data-action="cancel" class="on-edit-button cancel-button">Cancel</button>
+        <button data-action="save" class="on-edit-button save-button">Save</button>
+    </div>
+    `;
+  return elementFromTemplateString(todoListItemTemplate);
+}
+
 
 
 
@@ -176,33 +203,6 @@ function addToTodoStorage(listItemData) {
       handleTodoStorage([listItemData], "create");
     else handleTodoStorage(listItemData, "add");
   }
-}
-
-function getTodoListItemNode(uuid, todoListItem) {
-  const todoListItemTemplate = `<div class="todo-list-item" data-id="${uuid}">
-        <input 
-            type="checkbox"
-            class="todo-list-checkbox"
-            name="todoListCheckbox"
-            data-action="status"
-            ${todoListItem.checked ? "checked" : ""}
-            />
-
-        <input
-            type="text"
-            class="todo-list-input"
-            name="todoListInput"
-            value="${todoListItem.todoText}"
-            disabled
-            aria-label="todo list item text"
-        />
-        <button data-action="delete" class="hover-button delete-button"></button>
-        <button data-action="edit" class="hover-button edit-button"></button>
-        <button data-action="cancel" class="on-edit-button cancel-button">Cancel</button>
-        <button data-action="save" class="on-edit-button save-button">Save</button>
-    </div>
-    `;
-  return elementFromTemplateString(todoListItemTemplate);
 }
 
 //I need to attach an event listener on the todo list container so that I can listen for clicks on edit button
