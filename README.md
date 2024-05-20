@@ -66,6 +66,7 @@ document.querySelector('#app').innerHTML = `
 initializeHeader();
 initializeFooter();
 initializeTodoList();
+3. Make localised UI updated rather than clearing the whole container using innerHTML
 
 
 
@@ -121,6 +122,3 @@ Actions:
     4: Status
         - UI:
         - State:
-
-
-TODO: Make localised UI updated rather than clearing the whole container using innerHTML
